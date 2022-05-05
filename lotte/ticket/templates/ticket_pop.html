@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>티켓 예매 - 경기 선택</title>
+		<!--[if IE]>
+  		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/ticket1.js' %}"></script>
+		<style>
+			.table td, .table th {
+				vertical-align: middle;
+			}
+
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+				<div class="container d-flex justify-content-between">
+					<div class="navbar-brand d-flex align-items-center">
+						<strong>경기 선택</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+	<div class="container">
+		<table class="table">
+			<colgroup>
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:40%">
+				<col style="width:15%">
+				<col style="width:10%">
+			</colgroup>
+			<thead class="thead-light">
+			<tr class="text-center">
+				<th scope="col" style="text-align:center;">경기 일자</th>
+				<th scope="col" style="text-align:center;">시작 시간</th>
+				<th scope="col" style="text-align:center;">경기</th>
+				<th scope="col" style="text-align:center;">구장</th>
+				<th scope="col" style="text-align:center;">선택</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for game in games %}
+			<tr class="text-center">
+				<td>
+					<span>2022.{{ game.game_month }}.{{ game.game_day }}({{ game.game_week }})</span>
+					<input id="date_{{forloop.counter}}" value="{{ game.game_month }}.{{ game.game_day }}" hidden>
+				</td>
+				<td>
+					<span>{{ game.game_time}}</span>
+				</td>
+				<td>
+					<span><img src="https://ticket.giantsclub.com/member/Rsv/110020/assets/img/match_lt.png" alt="롯데자이언츠" style="height: 15%; width: 15%;"/>롯데 vs {{ game.game_vs }}<img src="{{ game.game_icon }}" alt="{{ game.game_vs }}" style="height: 15%; width: 15%;"/></span>
+				</td>
+				<td>
+					<span>사직 야구장</span>
+				</td>
+				<td>
+					<span><button id="btn_{{forloop.counter}}" onclick="btn_select_{{forloop.counter}}()">선택</button></span>
+				</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		<div class="row">
+			<div class="col-auto mr-auto"></div>
+			<div class="col-auto">
+				<form id="game_comp" name="game_comp" method="post" action="/seat_select">
+					{% csrf_token %}
+					<input id="game_date" name="game_date" value="" type="hidden"/>
+					<button class="btn btn-primary" type="button" onclick="formsubmit(this.form)">다음</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	</body>
+</html>
+

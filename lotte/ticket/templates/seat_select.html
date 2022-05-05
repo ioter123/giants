@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>티켓 예매 - 경기 선택</title>
+		<!--[if IE]>
+  		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+
+		<style>
+			.table td, .table th {
+				vertical-align: middle;
+				padding: 4 px;
+				font-size: 13px;
+			}
+
+			@media (min-width: 1200px)
+			.container {
+				max-width: 1700px;
+			}
+		</style>
+
+	</head>
+	<body oncontextmenu="return false">
+		<header>
+			<div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+				<div class="container d-flex justify-content-between">
+					<div class="navbar-brand d-flex align-items-center">
+						<strong>좌석 선택</strong>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<div class="container" style="max-width: 1700px;">
+			<div style="float: left; width:60%;overflow-y: auto;">
+				<img class="image" src="{% static 'media/sj_info_bg.gif'%}" alt="Picture 4" usemap="#img_map"/>
+				<map name="img_map" id="img_map">
+				</map>
+			</div>
+			<div style="float: left; width:40%;">
+				<table class="table" style="display: block; width: 100%;">
+					<thead class="thead-light" style="display: block; width:100%;">
+						<tr class="text-center" style="display: block; width: 100%;">
+							<th style="text-align:center; width:70%; float: left;">좌석등급</th>
+							<th style="text-align:center; width:30%; display: inline-block;">잔여좌석</th>
+						</tr>
+					</thead>
+					<tbody style="overflow-y: auto; height: 200px; display: block; width:100%;" id="group">
+					</tbody>
+				</table>
+				<table class="table" id="selected" style="display: block; width: 100%;">
+					<thead class="thead-light" style="display: block; width:100%;">
+						<tr class="text-center" style="display: block; width:100%;">
+							<th scope="col" style="text-align:center; display: inline-block; width:100%;">선택된 좌석 정보</th>
+						</tr>
+					</thead>
+					<tbody style="overflow-y: auto; height: 350px; display: block; width:100%;" id="select_group">
+					</tbody>
+				</table>
+			</div>
+			<div class="row">
+				<div class="col-auto mr-auto"></div>
+				<div class="col-auto">
+					<a class="btn btn-primary" href="#" role="button">예매하기</a>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		const seat_group = '{{seat_group}}';
+		const seat_price = '{{seat_price}}';
+		const seat_info = '{{seat_info}}';
+		const seat_groupJson = JSON.parse(seat_group);
+		const seat_priceJson = JSON.parse(seat_price);
+		const seat_infoJson = JSON.parse(seat_info);
+		let tagArea = document.getElementById('group');
+		for (var i = 0; i < seat_groupJson.length; i++) {
+			let new_trTag = document.createElement('tr');
+			let new_tdTag = document.createElement('td');
+			let new_tdTag2 = document.createElement('td');
+			new_trTag.setAttribute('class','text-center');
+			new_trTag.setAttribute('id',"group_"+String(i+1));
+			new_trTag.setAttribute('style', "width:100%; display: block; height:44px;");
+			new_tdTag.setAttribute('id', "seat_group_"+String(i+1));
+			new_tdTag2.setAttribute('id', "seat_group_count_"+String(i+1));
+			new_tdTag.setAttribute('style', "width:70%; display: block; float: left; height:30px;");
+			new_tdTag2.setAttribute('style', "width:30%; height:30px;");
+			tagArea.appendChild(new_trTag);
+			let tagArea2 = document.getElementById("group_"+String(i+1));
+			tagArea2.appendChild(new_tdTag);
+			tagArea2.appendChild(new_tdTag2);
+
+			var id = "seat_group_"+String(i+1);
+			var id2 = "seat_group_count_"+String(i+1);
+			var group = seat_groupJson[i]["seat_group"];
+			var count = seat_groupJson[i]["check_ticket"]+"석";
+
+			document.getElementById(id).innerHTML = group;
+			document.getElementById(id2).innerHTML = count;
+		};
+
+		function myFunction() {
+		  	document.getElementById("myDropdown").classList.toggle("show");
+		}
+
+		window.onclick = function(event) {
+		  	if (!event.target.matches('.dropbtn')) {
+				var dropdowns = document.getElementsByClassName("dropdown-content");
+				var i;
+				for (i = 0; i < dropdowns.length; i++) {
+			  		var openDropdown = dropdowns[i];
+			  		if (openDropdown.classList.contains('show')) {
+						openDropdown.classList.remove('show');
+				  	}
+				}
+		  	}
+		}
+
+
+		function total_cal(block_ticket_price, block){
+			let inp = document.getElementById("cnt_"+block);
+			let cnt5 = inp.value;
+			let i_max = inp.max;
+			if (i_max < cnt5){
+				inp.value = i_max;
+			};
+			cnt5 = inp.value;
+			let tt2 = document.getElementById("total_"+block);
+			const tot_price = '금액 : '+ block_ticket_price*cnt5;
+			tt2.innerHTML = tot_price;
+		};
+
+
+		function func(block){
+			var block_num = block.slice(-3)
+			var block_group = block.slice(0,-3)
+			let block_ticket_price = 0;
+			let block_seat_count = 0;
+			for (var i = 0; i < seat_priceJson.length; i++){
+				if ((seat_priceJson[i]['seat_group'] == block_group) && (seat_priceJson[i]['seat_block'] == block_num)){
+					block_seat_count = seat_priceJson[i]['check_ticket'];
+					break;
+				};
+			};
+
+			for (var i = 0; i < seat_priceJson.length; i++) {
+				if ((seat_priceJson[i]['seat_block'] == Number(block_num)) && (seat_priceJson[i]['seat_group'] == block_group)){
+					block_ticket_price = seat_priceJson[i]['ticket_price'];
+					break;
+				};
+			};
+
+			if (!!document.getElementById("select_group_"+block)){
+				let cnt3 = document.getElementById("cnt_"+block).value;
+				let inp = document.getElementById("cnt_"+block);
+				let i_max = inp.max;
+				if (i_max < Number(cnt3)+1){
+					inp.value = i_max;
+				}else{
+					document.getElementById("cnt_"+block).value = Number(cnt3)+1;
+				};
+
+				let cnt4 = document.getElementById("cnt_"+block).value;
+				let tt2 = document.getElementById("total_"+block);
+				const tot_price = '금액 : '+ block_ticket_price*cnt4;
+				tt2.innerHTML = tot_price;
+
+			} else {
+
+				let tagArea4 = document.getElementById('select_group');
+				let new_trTag2 = document.createElement('tr');
+				let new_tdTag3 = document.createElement('td');
+				let new_tdTag4 = document.createElement('td');
+				new_trTag2.setAttribute('class','text-center');
+				new_trTag2.setAttribute('id',"select_group_"+block);
+				new_tdTag3.setAttribute('id', "select_seat_group_"+block);
+				new_tdTag4.setAttribute('id', "select_eat_group_price_"+block);
+
+				new_trTag2.setAttribute('style', "width:100%; display: block; height:44px;");
+				new_tdTag3.setAttribute('style', "width:60%; display: block; float: left; height:30px;");
+				new_tdTag4.setAttribute('style', "width:30%; height:30px;");
+
+				tagArea4.appendChild(new_trTag2);
+				let tagArea5 = document.getElementById("select_group_"+block);
+				tagArea5.appendChild(new_tdTag3);
+				tagArea5.appendChild(new_tdTag4);
+
+				var id3 = "select_seat_group_"+block;
+				var id4 = "select_eat_group_price_"+block;
+				var group = block_group+' '+block_num+'블록';
+				var price = block_ticket_price+"원";
+				document.getElementById(id3).innerHTML = group;
+				document.getElementById(id4).innerHTML = price;
+
+				let new_del = document.createElement('td');
+				new_del.setAttribute('id',"delete_"+block);
+				new_del.setAttribute('style', "width:10%;");
+				tagArea5.appendChild(new_del);
+
+				let del = document.getElementById("delete_"+block);
+				let new_delBtn = document.createElement('button');
+				new_delBtn.setAttribute('id',"delete_btn_"+block);
+				new_delBtn.setAttribute('type',"button");
+				new_delBtn.setAttribute('onclick',"deleteRow('"+block+"')");
+				new_delBtn.setAttribute('style','padding: 0; cursor: pointer; background: 0 0; border: 0;');
+				del.appendChild(new_delBtn);
+
+				let delBtn = document.getElementById("delete_btn_"+block);
+				let new_x = document.createElement('span');
+				new_x.setAttribute('aria-hidden',"true");
+				new_x.setAttribute('id',"del"+block);
+				delBtn.appendChild(new_x);
+
+				let d = document.getElementById("del"+block);
+				const x = '×';
+				d.innerHTML = x;
+
+				let new_trTag2_1 = document.createElement('tr');
+				let new_tdTag3_1 = document.createElement('td');
+				new_trTag2_1.setAttribute('class','text-center');
+				new_trTag2_1.setAttribute('id',"select_group_"+block+"_1");
+				new_tdTag3_1.setAttribute('id', "count_"+block);
+
+				new_trTag2_1.setAttribute('style', "width:100%; display: block; height:44px;");
+				new_tdTag3_1.setAttribute('style', "width:50%; display: block; float: left; height:30px;");
+
+				tagArea4.appendChild(new_trTag2_1);
+				let tagArea5_1 = document.getElementById("select_group_"+block+"_1");
+				tagArea5_1.appendChild(new_tdTag3_1);
+
+				let cnt_td = document.getElementById("count_"+block);
+				let new_cnt = document.createElement('input');
+				new_cnt.setAttribute('id',"cnt_"+block);
+				new_cnt.setAttribute('type',"number");
+				new_cnt.setAttribute('name',"cnt_"+block);
+				new_cnt.setAttribute('min',1);
+				new_cnt.setAttribute('max',block_seat_count);
+				new_cnt.setAttribute('value',1);
+				new_cnt.setAttribute('onchange',"total_cal("+block_ticket_price+","+"'"+block+"')");
+				new_cnt.setAttribute('style', "width:50%; height:20px;");
+				cnt_td.appendChild(new_cnt);
+
+				let new_tdTag3_2 = document.createElement('td');
+				new_tdTag3_2.setAttribute('id', "total_"+block);
+				new_tdTag3_2.setAttribute('style', "width:50%; display: height:30px; float:right;");
+				tagArea5_1.appendChild(new_tdTag3_2);
+
+				let tt = document.getElementById("total_"+block);
+				let cnt2 = document.getElementById("cnt_"+block).value;
+				const tot_price = '금액 : '+ block_ticket_price*cnt2;
+				tt.innerHTML = tot_price;
+
+			};
+
+
+
+
+
+
+		};
+
+
+
+		function deleteRow(block) {
+			var select = document.getElementById("select_group_"+block);
+  			var index = select.rowIndex;
+  			var select2 = document.getElementById("select_group_"+block+"_1");
+  			var index2 = select.rowIndex;
+
+			const table = document.getElementById('selected');
+			const newRow = table.deleteRow(index);
+			const newRow2 = table.deleteRow(index2);
+
+		  }
+	</script>
+	<script src="{% static 'js/ticket2.js' %}"></script>
+</html>
+
+
