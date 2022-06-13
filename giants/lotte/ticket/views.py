@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from .models import *
 import pandas as pd
 from django.utils.safestring import SafeString
 from django.core import serializers
 import datetime
 from django.db.models import Q
-
+import os
 
 def index(request):
 
@@ -17,7 +18,7 @@ def ticket_pop(request):
     games = {'games': game_info}
     return render(request, 'ticket_pop.html', games)
 
-
+"""
 def seat_select(request):
     game_date = request.POST['game_date']
     game_date = game_date.split('.')
@@ -35,3 +36,25 @@ def seat_select(request):
 
     seats = {'seat_price': SafeString(seat), 'seat_group':  SafeString(seat_group), 'seat_info': SafeString(seat_info)}
     return render(request, 'seat_select.html', seats)
+"""
+
+def seat_select(request):
+    game_date = request.POST['game_date']
+    game_date = game_date.split('.')
+    path = os.path.dirname(os.path.abspath(__file__))
+    game_price = pd.read_csv(str(path)+'/data/game_ticket_price.csv', encoding='utf-8')
+
+    seat_df = game_price[(game_price['game_month']==int(game_date[0])) & (game_price['game_day']==int(game_date[1]))]
+
+    seat_group = seat_df.groupby('seat_group').count()['check_ticket'].reset_index()
+    seat_group = seat_group.to_json(orient='records', force_ascii=False)
+
+    seat_price = seat_df.groupby(['seat_group','seat_block']).mean()['ticket_price'].reset_index()
+    seat_col = seat_df.groupby(['seat_group','seat_block']).count()['check_ticket'].reset_index()
+    seat = seat_col.merge(seat_price)
+    seat = seat.to_json(orient='records', force_ascii=False)
+
+    seat_info = seat_df.to_json(orient='records', force_ascii=False)
+    seats = {'seat_price': SafeString(seat), 'seat_group':  SafeString(seat_group), 'seat_info': SafeString(seat_info)}
+    return render(request, 'seat_select.html', seats)
+

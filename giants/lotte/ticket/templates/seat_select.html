@@ -5,7 +5,7 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>티켓 예매 - 경기 선택</title>
+		<title>티켓 예매 - 좌석 선택</title>
 		<!--[if IE]>
   		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -74,7 +74,7 @@
 			</div>
 		</div>
 	</body>
-	<script>
+	<script type="text/javascript">
 		const seat_group = '{{seat_group}}';
 		const seat_price = '{{seat_price}}';
 		const seat_info = '{{seat_info}}';
@@ -258,6 +258,22 @@
 				const tot_price = '금액 : '+ block_ticket_price*cnt2;
 				tt.innerHTML = tot_price;
 
+				let new_trTag2_2 = document.createElement('tr');
+				let new_tdTag3_3 = document.createElement('td');
+				new_trTag2_2.setAttribute('class','text-center');
+				new_trTag2_2.setAttribute('id',"comment"+block+"_1");
+				new_tdTag3_3.setAttribute('id', "comment"+block);
+
+                new_trTag2_2.setAttribute('style', "width:100%; display: block; height:44px;");
+				new_tdTag3_3.setAttribute('style', "width:100%; display: block; float: left; height:30px;");
+
+				tagArea4.appendChild(new_trTag2_2);
+				let tagArea5_2 = document.getElementById("comment"+block+"_1");
+				tagArea5_2.appendChild(new_tdTag3_3);
+				let comment = document.getElementById("comment"+block);
+				comment.innerHTML = '다이나믹 프라이싱이 적용된 가격입니다.';
+
+
 			};
 
 
@@ -274,10 +290,13 @@
   			var index = select.rowIndex;
   			var select2 = document.getElementById("select_group_"+block+"_1");
   			var index2 = select.rowIndex;
+            var select3 = document.getElementById("comment"+block+"_1");
+  			var index3 = select.rowIndex;
 
 			const table = document.getElementById('selected');
 			const newRow = table.deleteRow(index);
 			const newRow2 = table.deleteRow(index2);
+			const newRow3 = table.deleteRow(index3);
 
 		  }
 	</script>

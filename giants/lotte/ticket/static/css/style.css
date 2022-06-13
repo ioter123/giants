@@ -238,10 +238,16 @@ a:focus {
 .action--play {
 	display: block;
 	margin: 1em auto;
-	opacity: 0;
 	pointer-events: none;
 	-webkit-transition: opacity 0.3s 0.1s;
 	transition: opacity 0.3s 0.1s;
+}
+
+.action--update {
+    display: block;
+    margin: 1em auto;
+    -webkit-transition: opacity 0.3s 0.1s;
+    transition: opacity 0.3s 0.1s;
 }
 
 .action--popup {
@@ -301,7 +307,7 @@ a:focus {
 		animation: hideVideo 1.25s forwards;
 	}
 	.video-player {
-		left: 50%;
+		left: 0%;
 		height: 100vh;
 		-webkit-transition: -webkit-transform 1s;
 		transition: transform 1s;
@@ -318,7 +324,7 @@ a:focus {
 /* This is the same as an aspect ratio of 16/9.
 Here we take the viewport height as main measure
 and size the video-inner accordingly.
-The video itself will use the viewport width as main 
+The video itself will use the viewport width as main
 measure so that we ensure a filling of the screen.
 */
 @media screen and (min-width: 25em) and (min-aspect-ratio: 1280/720) {
@@ -336,7 +342,7 @@ measure so that we ensure a filling of the screen.
 	}
 	.video-player {
 		width: 100vw;
-	}	
+	}
 }
 
 /* Animation for showing the video wrapper */

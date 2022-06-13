@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-32^!42jz_8a2all(3w-d-=jv_w6)v^+o!moqpqj2l9a)4)%ih4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hgbc.giantsclub.shop']
 
 
 # Application definition
@@ -124,3 +124,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

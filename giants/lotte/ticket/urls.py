@@ -1,9 +1,8 @@
-from django.contrib import admin
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('index',views.index),
+    path('',views.index, name='index'),
     path('ticket_pop',views.ticket_pop),
     path('seat_select',views.seat_select),
 ]
